@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated WebUI with interactive Statistics Dashboard (total intercepts, top blocked apps, daily trends).
 - Updated AGENTS.md, README.md, and TASKS.md with Epic K (intercept stats), system channel service shutdown, and production-grade engineering guarantees.
 - Integrated release ZIP packaging workflow (`./gradlew zipModule`).
+- Modified `settings.gradle.kts` to conditionally include `:testing-framework` only when the physical directory exists.
+- Established root-level `module/` directory containing complete Magisk template files (module.prop, post-fs-data.sh, uninstall.sh, system/.gitkeep, and updater scripts).
+- Modified `release-engineering/build.gradle.kts` to correctly compile the Magisk module package from the new `module/` source directory.
+- Created automated GitHub Actions CI pipeline (`.github/workflows/ci.yml`) with automated builds, tests, ZIP generation, and content validations.
+- Extended `hook-engine` with `enqueueNotificationWithTag` method-level hook (`T-HOOK-04`) to intercept and evaluate notification content and channels under Fail-open guarantees.
+- Implemented hook engine self-check and automatic disable on self-check failure (`T-HOOK-06`).
+- Expanded unit test coverage in `NotificationHookManagerTest` for the new hooks, self-check, and disable mechanisms.
 
 ## [0.1.0-alpha] - 2026-07-26
 
