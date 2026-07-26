@@ -1,12 +1,18 @@
 rootProject.name = "ToastMagers"
 
-include(":hook-engine")
-include(":rule-engine")
+// Always included subprojects
 include(":app-scanner")
 include(":config-system")
-include(":webui")
-include(":stats-engine")
-include(":permission-sync")
-include(":security-hardening")
+include(":hook-engine")
 include(":performance-opt")
+include(":permission-sync")
 include(":release-engineering")
+include(":rule-engine")
+include(":security-hardening")
+include(":stats-engine")
+include(":webui")
+
+// Conditionally include testing-framework only if the directory exists
+if (file("testing-framework").exists()) {
+    include(":testing-framework")
+}
