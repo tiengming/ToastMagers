@@ -1,0 +1,12 @@
+rootProject.name = 'ToastMagers'
+
+include ':hook-engine'
+include ':rule-engine'
+include ':app-scanner'
+include ':config-system'
+include ':webui'
+include ':permission-sync'
+include ':security-hardening'
+include ':performance-opt'
+include ':testing-framework'
+include ':release-engineering'

@@ -1,0 +1,6 @@
+id=toast_magers
+name=ToastMagers
+version=v0.1.0-alpha
+versionCode=100
+author=Jules
+description=面向 Root 环境的系统级通知与 Toast 弹窗拦截系统。

@@ -1,0 +1,13 @@
+#!/sbin/sh
+ZIPFILE="$3"
+CONSOLE="$2"
+ui_print() {
+  echo "$1" >&"$CONSOLE"
+}
+ui_print "**************************************"
+ui_print "       ToastMagers Installer"
+ui_print "**************************************"
+DIR="/data/adb/modules/toast_magers"
+ui_print "- Installing ToastMagers module files..."
+mkdir -p "$DIR"
+unzip -o "$ZIPFILE" -d "$DIR"

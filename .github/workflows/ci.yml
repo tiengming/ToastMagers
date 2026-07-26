@@ -1,0 +1,37 @@
+name: ToastMagers CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Grant Execute Permission for Gradlew
+      run: chmod +x gradlew
+
+    - name: Build and Test Project
+      run: ./gradlew build --no-daemon
+
+    - name: Generate Magisk Module ZIP
+      run: ./gradlew zipModule --no-daemon
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ToastMagers-release
+        path: out/ToastMagers-release.zip
