@@ -29,4 +29,12 @@ public class SystemHookBridgeTest {
         Assert.assertTrue(unhooked);
         Assert.assertFalse(bridge.isHooked(className, methodName));
     }
+
+    @Test
+    public void testAndroidSystemHookBridgeFallback() {
+        AndroidSystemHookBridge bridge = new AndroidSystemHookBridge();
+        // Since native library isn't loaded in local JVM tests, it should return false gracefully
+        Assert.assertFalse(bridge.hookMethod("some.Class", "someMethod", "()V", null));
+        Assert.assertFalse(bridge.unhookMethod("some.Class", "someMethod"));
+    }
 }

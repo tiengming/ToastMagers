@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended `hook-engine` with `enqueueNotificationWithTag` method-level hook (`T-HOOK-04`) to intercept and evaluate notification content and channels under Fail-open guarantees.
 - Implemented hook engine self-check and automatic disable on self-check failure (`T-HOOK-06`).
 - Expanded unit test coverage in `NotificationHookManagerTest` for the new hooks, self-check, and disable mechanisms.
+- Implemented concrete, production-grade on-device Android system implementations for core platform components: `AndroidSystemHookBridge` (native JNI hook bridge loader), `AndroidRuntimeDataAccessor` (PackageManager & NMS reflection scanner), and `AndroidNotificationServiceAccessor` (NMS direct controller for package states and channel closures).
+- Added test coverage in `NotificationServiceAccessorTest`, `RuntimeDataAccessorTest`, and `SystemHookBridgeTest` verifying fallback behaviors under dummy environments.
 
 ## [0.1.0-alpha] - 2026-07-26
 

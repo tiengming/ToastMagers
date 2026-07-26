@@ -24,4 +24,12 @@ public class RuntimeDataAccessorTest {
         Assert.assertTrue(accessor.hasPostNotificationPermission("com.example.app1"));
         Assert.assertFalse(accessor.hasPostNotificationPermission("com.example.app2"));
     }
+
+    @Test
+    public void testAndroidRuntimeDataAccessorFallback() {
+        AndroidRuntimeDataAccessor accessor = new AndroidRuntimeDataAccessor(null, null);
+        Assert.assertTrue(accessor.getInstalledPackages().isEmpty());
+        Assert.assertTrue(accessor.getPackagesWithActiveChannels().isEmpty());
+        Assert.assertFalse(accessor.hasPostNotificationPermission("com.example.app"));
+    }
 }
