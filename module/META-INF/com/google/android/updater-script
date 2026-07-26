@@ -1,0 +1,3 @@
+# Dummy updater-script required for some legacy installers (usually contains just comment or simple commands)
+# Magisk ignores this script if update-binary exists, but some TWRP environments require it to exist.
+ui_print "ToastMagers Updater Script"
