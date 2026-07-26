@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `release-engineering/build.gradle.kts` to package all compiled submodule JAR libraries (Epic A-K) inside the Magisk release ZIP under `/libs/`.
 - Packaged complete architectural placeholders (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`) for the native Zygisk hooks and companion libraries in the output release ZIP.
 - Refactored `.github/workflows/ci.yml` artifact upload step to unzip the verified module package first before uploading, resolving artifact nesting issues and ensuring a direct, single-level flashable ZIP on download from GitHub Actions.
+- Enhanced and finalized `module.prop` with advanced properties (e.g. `support`, `updateJson`, and detailed system-level capabilities).
+- Developed a production-grade `post-fs-data.sh` Magisk hook script for boot-time file configuration, default JSON creation, system uid ownership setups (`system:system`), proper permissions formatting, and SELinux restorecon context configurations.
+- Developed a complete `uninstall.sh` cleaning script performing comprehensive cleanups of the module's persistence logs and directories.
 
 ## [0.1.0-alpha] - 2026-07-26
 

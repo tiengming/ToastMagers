@@ -1,6 +1,8 @@
 id=toast_magers
 name=ToastMagers
-version=v0.1.0-alpha
-versionCode=100
-author=Jules
-description=面向 Root 环境的系统级通知与 Toast 弹窗拦截系统。
+version=v0.2.0-alpha
+versionCode=200
+author=Jules & ToastMagers Team
+description=面向 Android 10+ (Root/Zygisk) 的高可用系统级通知与 Toast 拦截系统。采用 ART 方法 Hook、线性时间正则匹配与无锁环形缓冲区拦截统计，支持 Fail-open 高可靠语义、通知渠道强制锁定与 WebUI 交互看板。
+support=https://github.com/tiengming/ToastMagers
+updateJson=https://raw.githubusercontent.com/tiengming/ToastMagers/main/update.json
