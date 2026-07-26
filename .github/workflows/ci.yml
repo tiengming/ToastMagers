@@ -45,9 +45,14 @@ jobs:
           unzip -l out/ToastMagers-release.zip | grep -q "module.prop" || { echo "module.prop missing"; exit 1; }
           unzip -l out/ToastMagers-release.zip | grep -q "META-INF/" || { echo "META-INF missing"; exit 1; }
 
+      - name: Unpack ZIP for artifact upload
+        run: |
+          mkdir -p out/unpacked
+          unzip out/ToastMagers-release.zip -d out/unpacked
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToastMagers-release
-          path: out/ToastMagers-release.zip
+          path: out/unpacked/
           if-no-files-found: error
