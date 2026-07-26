@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://commonmark.org/help/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0-alpha] - 2026-07-26
+
+### Added
+- Implemented `stats-engine` module (`StatsManager`) providing lock-free asynchronous notification intercept collection, top blocked apps ranking, and daily intercept trends.
+- Added system-level Notification Channel service disabling (`setNotificationChannelEnabled`) to `NotificationServiceAccessor` and `SystemStateSynchronizer`.
+- Updated WebUI with interactive Statistics Dashboard (total intercepts, top blocked apps, daily trends).
+- Updated AGENTS.md, README.md, and TASKS.md with Epic K (intercept stats), system channel service shutdown, and production-grade engineering guarantees.
+- Integrated release ZIP packaging workflow (`./gradlew zipModule`).
+
 ## [0.1.0-alpha] - 2026-07-26
 
 ### Added

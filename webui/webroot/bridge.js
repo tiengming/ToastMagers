@@ -103,6 +103,50 @@
         clearLogs: function() {
             localStorage.setItem("toastmagers_logs", JSON.stringify([]));
             return { success: true };
+        },
+
+        /**
+         * Retrieves notification intercept statistics (Epic K / T-STAT-03).
+         */
+        getStatistics: function() {
+            const defaultStats = {
+                totalIntercepts: 154,
+                totalAllowed: 420,
+                totalToastIntercepts: 98,
+                totalNotificationIntercepts: 56,
+                topBlockedApps: [
+                    { packageName: "com.rogue.spam.app", name: "Spammy Rogue App", count: 86 },
+                    { packageName: "com.marketing.notification", name: "Marketing Service", count: 42 },
+                    { packageName: "com.ad.push.service", name: "Ad Push SDK", count: 18 },
+                    { packageName: "com.game.banner", name: "Mini Game Ads", count: 8 }
+                ],
+                dailyStats: [
+                    { date: "2026-07-20", count: 12 },
+                    { date: "2026-07-21", count: 18 },
+                    { date: "2026-07-22", count: 25 },
+                    { date: "2026-07-23", count: 19 },
+                    { date: "2026-07-24", count: 32 },
+                    { date: "2026-07-25", count: 28 },
+                    { date: "2026-07-26", count: 20 }
+                ]
+            };
+            return JSON.parse(localStorage.getItem("toastmagers_stats") || JSON.stringify(defaultStats));
+        },
+
+        /**
+         * Resets statistics data.
+         */
+        resetStatistics: function() {
+            const emptyStats = {
+                totalIntercepts: 0,
+                totalAllowed: 0,
+                totalToastIntercepts: 0,
+                totalNotificationIntercepts: 0,
+                topBlockedApps: [],
+                dailyStats: []
+            };
+            localStorage.setItem("toastmagers_stats", JSON.stringify(emptyStats));
+            return { success: true };
         }
     };
 

@@ -47,9 +47,53 @@
             </div>
         </section>
 
-        <!-- Admin Dashboard Section (T-WEB-02, T-WEB-03) -->
+        <!-- Admin Dashboard Section (T-WEB-02, T-WEB-03, T-STAT-03) -->
         <section id="dashboard-section" class="hidden space-y-8">
             
+            <!-- Statistics Overview Cards (Epic K / T-STAT-03) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <span class="text-xs text-gray-500 font-semibold">🛡️ 累计拦截总数</span>
+                    <span id="stat-total-intercepts" class="text-2xl font-extrabold text-indigo-600 mt-2">0</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <span class="text-xs text-gray-500 font-semibold">🟢 允许放行总数</span>
+                    <span id="stat-total-allowed" class="text-2xl font-extrabold text-green-600 mt-2">0</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <span class="text-xs text-gray-500 font-semibold">💬 Toast 拦截数</span>
+                    <span id="stat-toast-intercepts" class="text-2xl font-extrabold text-amber-500 mt-2">0</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <span class="text-xs text-gray-500 font-semibold">🔔 通知拦截数</span>
+                    <span id="stat-notification-intercepts" class="text-2xl font-extrabold text-red-500 mt-2">0</span>
+                </div>
+            </div>
+
+            <!-- Top Blocked Apps & Intercept Statistics Grid -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <span>📊</span> TOP 拦截应用与每日趋势 (Epic K)
+                    </h3>
+                    <button onclick="handleResetStats()" class="text-xs text-gray-400 hover:text-gray-600 font-medium">重置统计</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">TOP 拦截排行榜</h4>
+                        <div id="stat-top-apps-container" class="space-y-2">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">每日拦截趋势</h4>
+                        <div id="stat-daily-container" class="space-y-2">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Dashboard Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
@@ -108,12 +152,66 @@
                 document.getElementById("auth-section").classList.add("hidden");
                 document.getElementById("dashboard-section").classList.remove("hidden");
                 document.getElementById("nav-actions").classList.remove("hidden");
+                renderStats();
                 renderApps();
                 renderLogs();
             } else {
                 document.getElementById("auth-section").classList.remove("hidden");
                 document.getElementById("dashboard-section").classList.add("hidden");
                 document.getElementById("nav-actions").classList.add("hidden");
+            }
+        }
+
+        function renderStats() {
+            if (!window.ToastMagersBridge.getStatistics) return;
+            const stats = window.ToastMagersBridge.getStatistics();
+
+            document.getElementById("stat-total-intercepts").textContent = stats.totalIntercepts || 0;
+            document.getElementById("stat-total-allowed").textContent = stats.totalAllowed || 0;
+            document.getElementById("stat-toast-intercepts").textContent = stats.totalToastIntercepts || 0;
+            document.getElementById("stat-notification-intercepts").textContent = stats.totalNotificationIntercepts || 0;
+
+            // Render Top Apps
+            const topAppsContainer = document.getElementById("stat-top-apps-container");
+            topAppsContainer.innerHTML = "";
+            if (stats.topBlockedApps && stats.topBlockedApps.length > 0) {
+                stats.topBlockedApps.forEach(item => {
+                    const row = document.createElement("div");
+                    row.className = "flex justify-between items-center bg-gray-50 px-3 py-1.5 rounded text-xs";
+                    row.innerHTML = `
+                        <span class="font-medium text-gray-700 truncate max-w-[200px]">${item.name || item.packageName}</span>
+                        <span class="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">${item.count} 次</span>
+                    `;
+                    topAppsContainer.appendChild(row);
+                });
+            } else {
+                topAppsContainer.innerHTML = `<div class="text-xs text-gray-400 py-2">暂无拦截数据</div>`;
+            }
+
+            // Render Daily Trends
+            const dailyContainer = document.getElementById("stat-daily-container");
+            dailyContainer.innerHTML = "";
+            if (stats.dailyStats && stats.dailyStats.length > 0) {
+                stats.dailyStats.forEach(item => {
+                    const row = document.createElement("div");
+                    row.className = "flex justify-between items-center bg-gray-50 px-3 py-1.5 rounded text-xs";
+                    row.innerHTML = `
+                        <span class="font-mono text-gray-500">${item.date}</span>
+                        <span class="font-semibold text-gray-700">${item.count} 次</span>
+                    `;
+                    dailyContainer.appendChild(row);
+                });
+            } else {
+                dailyContainer.innerHTML = `<div class="text-xs text-gray-400 py-2">暂无每日数据</div>`;
+            }
+        }
+
+        function handleResetStats() {
+            if (confirm("确定要重置所有拦截统计数据吗？")) {
+                if (window.ToastMagersBridge.resetStatistics) {
+                    window.ToastMagersBridge.resetStatistics();
+                    renderStats();
+                }
             }
         }
 

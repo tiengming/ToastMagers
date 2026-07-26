@@ -78,6 +78,9 @@ public class NotificationHookManager {
                 } catch (Exception ignored) {}
 
                 if ("BLOCK".equals(actionStr)) {
+                    // Record statistics (T-STAT-01)
+                    com.toastmagers.stats.StatsManager.getInstance().recordIntercept(pkg, null, "TOAST");
+
                     // Log the interception safely with desensitized logs (T-SEC-01)
                     if (logManager != null) {
                         try {
@@ -88,6 +91,9 @@ public class NotificationHookManager {
                     return "Blocked"; // Intercepted
                 }
             }
+
+            // Record allowed event (T-STAT-01)
+            com.toastmagers.stats.StatsManager.getInstance().recordPassThrough(pkg);
 
         } catch (Throwable t) {
             // Fail-open guarantee: never crash the caller (system_server) (T-HOOK-05)

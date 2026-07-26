@@ -37,4 +37,36 @@ public class SystemStateSynchronizer {
             return false;
         }
     }
+
+    /**
+     * Synchronizes and closes specific system notification channels for a package (T-SYNC-02).
+     *
+     * @param packageName               The target package name
+     * @param blockNotificationChannels List of notification channel IDs to disable/close
+     * @return true if all channel synchronizations succeeded
+     */
+    public boolean synchronizeChannelState(String packageName, java.util.List<String> blockNotificationChannels) {
+        if (packageName == null || blockNotificationChannels == null || accessor == null) {
+            return false;
+        }
+        boolean allSuccess = true;
+        for (String channelId : blockNotificationChannels) {
+            try {
+                if (channelId != null && !channelId.isEmpty()) {
+                    boolean enabled = accessor.isNotificationChannelEnabled(packageName, channelId);
+                    if (enabled) {
+                        System.out.println("Sync State: Closing system notification channel [" + channelId + "] for: " + packageName);
+                        boolean ok = accessor.setNotificationChannelEnabled(packageName, channelId, false);
+                        if (!ok) {
+                            allSuccess = false;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Safe log: Failed to close channel " + channelId + " for " + packageName + ": " + e.getMessage());
+                allSuccess = false;
+            }
+        }
+        return allSuccess;
+    }
 }

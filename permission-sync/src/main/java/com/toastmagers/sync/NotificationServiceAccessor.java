@@ -21,4 +21,23 @@ public interface NotificationServiceAccessor {
      * @return true if set successfully, false otherwise
      */
     boolean setNotificationsEnabled(String packageName, boolean enabled);
+
+    /**
+     * Checks if a specific notification channel service is enabled for a package.
+     *
+     * @param packageName The package name
+     * @param channelId   The channel ID
+     * @return true if enabled, false if disabled/closed
+     */
+    boolean isNotificationChannelEnabled(String packageName, String channelId);
+
+    /**
+     * Sets whether a specific notification channel service is enabled/closed for a package (T-SYNC-02).
+     *
+     * @param packageName The package name
+     * @param channelId   The channel ID
+     * @param enabled     Whether to enable or disable/close
+     * @return true if set successfully, false otherwise
+     */
+    boolean setNotificationChannelEnabled(String packageName, String channelId, boolean enabled);
 }
