@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToastMagers - 管理后台</title>
+    <!-- Tailwind CSS via CDN for a modern and clean responsive interface -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                <span>🛡️</span> ToastMagers Dashboard
+            </h1>
+            <div id="nav-actions" class="hidden flex items-center gap-4">
+                <span class="text-sm bg-indigo-700 px-3 py-1 rounded" id="user-badge">Administrator</span>
+                <button onclick="handleLogout()" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition">退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Login Card / Auth Section (T-WEB-04) -->
+        <section id="auth-section" class="max-w-md mx-auto my-12 bg-white p-8 rounded-lg shadow-md border border-gray-100">
+            <div class="text-center mb-6">
+                <span class="text-4xl">🔑</span>
+                <h2 class="text-2xl font-bold mt-2">身份口令校验</h2>
+                <p class="text-gray-500 text-sm mt-1">请输入后台访问密码进行验证</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">管理密码</label>
+                    <input type="password" id="auth-password" placeholder="默认密码: root" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                </div>
+                <div id="auth-error" class="hidden text-sm text-red-500 font-medium"></div>
+                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md shadow transition">验证并登录</button>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard Section (T-WEB-02, T-WEB-03) -->
+        <section id="dashboard-section" class="hidden space-y-8">
+            
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- App List Card (T-WEB-02) -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-[550px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <span>📱</span> 应用清单与规则匹配
+                        </h3>
+                        <span id="app-count" class="text-xs bg-indigo-100 text-indigo-800 font-semibold px-2 py-1 rounded-full">0 Apps</span>
+                    </div>
+                    <div class="mb-4">
+                        <input type="text" id="app-search" oninput="renderApps()" placeholder="输入包名或应用名搜索..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    </div>
+                    
+                    <!-- App Scrollable List -->
+                    <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="app-list-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Toast Tracker Logs Card (T-WEB-03) -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-[550px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <span>📋</span> Toast 溯源日志
+                        </h3>
+                        <button onclick="handleClearLogs()" class="text-xs text-red-500 hover:text-red-700 font-medium">清除日志</button>
+                    </div>
+                    <p class="text-xs text-amber-600 bg-amber-50 border border-amber-100 px-3 py-2 rounded-md mb-4 leading-relaxed">
+                        🔒 <b>隐私工程合规提示：</b> 遵循数据最小化规则，通知/Toast 弹窗的正文在日志中默认处于屏蔽状态（不展示正文），点击相应日志行方可临时展开查看。
+                    </p>
+
+                    <!-- Logs Scrollable List -->
+                    <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="log-list-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Unified JS Bridge -->
+    <script src="bridge.js"></script>
+    <script>
+        // Check current auth status on load
+        window.addEventListener("DOMContentLoaded", () => {
+            checkAuth();
+        });
+
+        function checkAuth() {
+            if (window.ToastMagersBridge.isAuthenticated()) {
+                document.getElementById("auth-section").classList.add("hidden");
+                document.getElementById("dashboard-section").classList.remove("hidden");
+                document.getElementById("nav-actions").classList.remove("hidden");
+                renderApps();
+                renderLogs();
+            } else {
+                document.getElementById("auth-section").classList.remove("hidden");
+                document.getElementById("dashboard-section").classList.add("hidden");
+                document.getElementById("nav-actions").classList.add("hidden");
+            }
+        }
+
+        function handleLogin() {
+            const password = document.getElementById("auth-password").value;
+            const res = window.ToastMagersBridge.verifyAuth(password);
+            if (res.success) {
+                document.getElementById("auth-error").classList.add("hidden");
+                checkAuth();
+            } else {
+                const errDiv = document.getElementById("auth-error");
+                errDiv.textContent = res.message;
+                errDiv.classList.remove("hidden");
+            }
+        }
+
+        function handleLogout() {
+            window.ToastMagersBridge.logout();
+            checkAuth();
+        }
+
+        function renderApps() {
+            const query = document.getElementById("app-search").value.toLowerCase();
+            const apps = window.ToastMagersBridge.getAppList();
+            const container = document.getElementById("app-list-container");
+            container.innerHTML = "";
+
+            const filteredApps = apps.filter(app => 
+                app.name.toLowerCase().includes(query) || app.packageName.toLowerCase().includes(query)
+            );
+
+            document.getElementById("app-count").textContent = `${filteredApps.length} Apps`;
+
+            if (filteredApps.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-400 text-sm">未找到匹配的应用</div>`;
+                return;
+            }
+
+            filteredApps.forEach(app => {
+                const card = document.createElement("div");
+                card.className = "flex justify-between items-center bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-100 transition";
+                
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-sm text-gray-900">${app.name}</span>
+                            ${app.isWhitelisted ? `<span class="bg-green-100 text-green-800 text-[10px] font-semibold px-2 py-0.5 rounded">白名单</span>` : ""}
+                        </div>
+                        <div class="text-xs text-gray-400 font-mono">${app.packageName}</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-medium ${app.blockAllToasts ? "text-red-500" : "text-gray-400"}">${app.blockAllToasts ? "拦截中" : "正常放行"}</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" ${app.blockAllToasts ? "checked" : ""} onchange="handleToggleBlock('${app.packageName}', this.checked)" class="sr-only peer" ${app.isWhitelisted ? "disabled" : ""}>
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500 ${app.isWhitelisted ? "opacity-50 cursor-not-allowed" : ""}"></div>
+                        </label>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleToggleBlock(packageName, blockAll) {
+            window.ToastMagersBridge.toggleAppBlock(packageName, blockAll);
+            renderApps();
+        }
+
+        function renderLogs() {
+            const logs = window.ToastMagersBridge.getToastLogs();
+            const container = document.getElementById("log-list-container");
+            container.innerHTML = "";
+
+            if (logs.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-400 text-sm">暂无拦截日志记录</div>`;
+                return;
+            }
+
+            logs.forEach(log => {
+                const card = document.createElement("div");
+                card.className = "bg-gray-50 border border-gray-100 rounded-lg p-3 space-y-2 hover:bg-gray-100 transition";
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-mono text-gray-400">${log.timestamp}</span>
+                        <span class="px-2 py-0.5 rounded font-semibold text-[10px] ${log.action === "BLOCKED" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}">${log.action}</span>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-800">${log.packageName}</div>
+                    
+                    <!-- Notification Content / Body Section - Hidden by default (T-WEB-03 Privacy engineering) -->
+                    <div class="text-xs text-gray-500 pt-1">
+                        <button onclick="toggleLogBody(this, '${encodeURIComponent(log.originBody)}')" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-gray-700 text-[10px] transition">👁️ 点击临时展开内容</button>
+                        <div class="hidden mt-2 p-2 bg-white rounded border border-gray-100 font-mono break-all text-gray-700"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleLogBody(btn, encodedBody) {
+            const bodyDiv = btn.nextElementSibling;
+            if (bodyDiv.classList.contains("hidden")) {
+                bodyDiv.textContent = decodeURIComponent(encodedBody);
+                bodyDiv.classList.remove("hidden");
+                btn.textContent = "🙈 收起内容";
+            } else {
+                bodyDiv.classList.add("hidden");
+                btn.textContent = "👁️ 点击临时展开内容";
+            }
+        }
+
+        function handleClearLogs() {
+            if (confirm("确定要清除所有拦截日志记录吗？")) {
+                window.ToastMagersBridge.clearLogs();
+                renderLogs();
+            }
+        }
+    </script>
+</body>
+</html>
