@@ -15,11 +15,35 @@ tasks.register<Zip>("zipModule") {
         include("*.sh")
         include("system/**")
         include("META-INF/**")
+        include("zygisk/**")
+        include("lib/**")
     }
 
     // Include webui assets
     from(rootProject.projectDir.resolve("webui/webroot")) {
         into("webroot")
+    }
+
+    // Include compiled libraries from submodules (Epic A-K)
+    val javaSubprojects = listOf(
+        ":app-scanner",
+        ":config-system",
+        ":hook-engine",
+        ":performance-opt",
+        ":permission-sync",
+        ":rule-engine",
+        ":security-hardening",
+        ":stats-engine"
+    )
+
+    javaSubprojects.forEach { projPath ->
+        dependsOn("$projPath:jar")
+
+        val proj = parent!!.project(projPath)
+        from(proj.layout.buildDirectory.dir("libs")) {
+            include("*.jar")
+            into("libs")
+        }
     }
 
     includeEmptyDirs = false

@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded unit test coverage in `NotificationHookManagerTest` for the new hooks, self-check, and disable mechanisms.
 - Implemented concrete, production-grade on-device Android system implementations for core platform components: `AndroidSystemHookBridge` (native JNI hook bridge loader), `AndroidRuntimeDataAccessor` (PackageManager & NMS reflection scanner), and `AndroidNotificationServiceAccessor` (NMS direct controller for package states and channel closures).
 - Added test coverage in `NotificationServiceAccessorTest`, `RuntimeDataAccessorTest`, and `SystemHookBridgeTest` verifying fallback behaviors under dummy environments.
+- Updated `release-engineering/build.gradle.kts` to package all compiled submodule JAR libraries (Epic A-K) inside the Magisk release ZIP under `/libs/`.
+- Packaged complete architectural placeholders (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`) for the native Zygisk hooks and companion libraries in the output release ZIP.
 
 ## [0.1.0-alpha] - 2026-07-26
 
